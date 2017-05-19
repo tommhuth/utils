@@ -7,7 +7,7 @@ export const HttpMethod = {
     Delete: "delete"
 }
 
-export class ExternalRequestError extends Error {
+export class FetchError extends Error {
     constructor(response, body) {
         super()
 
@@ -22,14 +22,15 @@ export class ExternalRequestError extends Error {
     }
 }
 
-export default class Fetch {
-    static _authorization = null
-    static _authorizationHeader = null
+export class Fetch {
+   static _authorization = null
+   static _authorizationHeader = null
 
-    static makeRequest(url, method, options = { headers: {} }, body) {
+    static async makeRequest(url, method, options = { headers: {} }, body) { 
+        let response
         let mergedOptions = {
             method,
-            body: options.headers && options.headers["Content-Type"] !== "application/json" ? body : JSON.stringify(body),
+            body: options.headers["content-type"] && options.headers["content-type"] !== "application/json" ? body : JSON.stringify(body),
             headers: this.makeHeaders(options.headers || {})
         }
 
@@ -37,30 +38,30 @@ export default class Fetch {
             delete options.body
         }
 
-        return fetch(url, mergedOptions)
-            .then(response => {
-                if (response.status < 400) {
-                    if (response.headers.get("content-type").includes("json")) {
-                        return response.json()
-                    } else {
-                        return response.text()
-                    }
-                } else {
-                    return response.text().then(body => {
-                        throw new ExternalRequestError(response, body)
-                    })
-                }
-            })
+        response = await fetch(url, mergedOptions) 
+
+        if (response.status < 400) {
+            switch (response.headers.get("content-type")) {
+                case "application/json":
+                    return await response.json()
+                default:
+                    return await response.text()
+            }
+        } else {
+            let body = await response.text() 
+            
+            throw new FetchError(response, body)
+        }
     }
 
     static makeHeaders(headers) {
         let mergedHeaders = new Headers()
 
-        mergedHeaders.set("Accept", "application/json")
-        mergedHeaders.set("Content-Type", "application/json")
+        mergedHeaders.set("accept", "application/json")
+        mergedHeaders.set("content-Type", "application/json")
         
         if (Fetch._authorization) {
-            mergedHeaders.set("Authorization", Fetch._authorization)
+            mergedHeaders.set("authorization", Fetch._authorization)
         }
 
         for (let key in headers) {
