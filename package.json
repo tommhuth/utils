@@ -1,5 +1,5 @@
 {
-  "name": "utils",
+  "name": "@huth/utils",
   "version": "0.0.0",
   "description": "Utility wrappers for local storage, fetch and geo position.",
   "main": "index.js",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/tommhuth/utils/issues"
   },
-  "homepage": "https://github.com/tommhuth/utils#readme"
+  "homepage": "https://github.com/tommhuth/utils#readme",
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1"
+  }
 }
