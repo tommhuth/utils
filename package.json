@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Utility wrappers for local storage, fetch and geo position.",
   "main": "index.js",
+  "sideEffects": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
