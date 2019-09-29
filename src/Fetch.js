@@ -1,18 +1,21 @@
-import fetch from "isomorphic-fetch"
+import fetch from "unfetch"
 
 export const HttpMethod = {
-    Get: "get",
-    Post: "post",
-    Put: "put",
-    Delete: "delete"
+    GET: "get",
+    POST: "post",
+    PUT: "put",
+    DELETE: "delete",
+    PATCH: "patch",
 }
 
 export class FetchError extends Error {
-    constructor(response, body) {
-        super()
+    constructor({ method, url, status, body, headers }) {
+        super(`${method.toUpperCase()} ${url} failed: ${status}`)
 
-        this.status = response.status
-        this.headers = response.headers
+        this.status = status
+        this.url = url
+        this.method = method
+        this.headers = headers
 
         try {
             this.body = JSON.parse(body)
@@ -23,72 +26,86 @@ export class FetchError extends Error {
 }
 
 export class Fetch {
-   static _authorization = null
-   static _authorizationHeader = null
+    static defaultHeaders = {
+        "content-type": "application/json"
+    }
 
-    static async makeRequest(url, method, options = { headers: {} }, body) { 
-        let response
-        let mergedOptions = {
+    static async request(url, {
+        method = HttpMethod.GET,
+        body,
+        headers: incomingHeaders = {}
+    } = {}) {
+        let headers = { ...this.defaultHeaders, ...incomingHeaders } 
+        let response = await fetch(url, {
             method,
-            body: options.headers["content-type"] && options.headers["content-type"] !== "application/json" ? body : JSON.stringify(body),
-            headers: this.makeHeaders(options.headers || {})
-        }
+            body: headers["content-type"] === "application/json" ? JSON.stringify(body) : body,
+            headers
+        })
 
-        if (method === HttpMethod.Get) {
-            delete options.body
-        }
-
-        response = await fetch(url, mergedOptions) 
-
-        if (response.status < 400) {
-            switch (response.headers.get("content-type")) {
-                case "application/json":
-                    return await response.json()
-                default:
-                    return await response.text()
+        if (response.ok) {
+            if (response.headers.get("content-type") === "application/json") {
+                return await response.json()
+            } else {
+                return await response.text()
             }
         } else {
-            let body = await response.text() 
-            
-            throw new FetchError(response, body)
+            let { status, headers } = response
+            let body = await response.text()
+
+            throw new FetchError({ body, status, url, method, headers })
         }
     }
 
-    static makeHeaders(headers) {
-        let mergedHeaders = new Headers()
+    static get(url, headers) {
+        return this.request(url, {
+            headers
+        })
+    }
 
-        mergedHeaders.set("accept", "application/json")
-        mergedHeaders.set("content-Type", "application/json")
-        
-        if (Fetch._authorization) {
-            mergedHeaders.set("authorization", Fetch._authorization)
+    static post(url, body, headers) {
+        return this.request(url, {
+            method: HttpMethod.POST,
+            headers,
+            body
+        })
+    }
+
+    static put(url, body, headers) {
+        return this.request(url, {
+            method: HttpMethod.PUT,
+            headers,
+            body
+        })
+    }
+
+    static delete(url, body, headers) {
+        return this.request(url, {
+            method: HttpMethod.DELETE,
+            headers,
+            body
+        })
+    }
+
+    static patch(url, body, headers) {
+        return this.request(url, {
+            method: HttpMethod.PATCH,
+            headers,
+            body
+        })
+    }
+
+    static addDefaultHeader(headerName, value) {
+        this.defaultHeaders = {
+            ...this.defaultHeaders,
+            [headerName]: value
         }
-
-        for (let key in headers) {
-            mergedHeaders.append(key, headers[key])
-        }
-
-        return mergedHeaders
+    }
+    
+    static removeDefaultHeader(headerName) {
+        delete this.defaultHeaders[headerName]
     }
 
-    static get(url, options) {
-        return this.makeRequest(url, HttpMethod.Get, options)
-    }
-
-    static post(url, body, options) {
-        return this.makeRequest(url, HttpMethod.Post, options, body)
-    }
-
-    static delete(url, body, options) {
-        return this.makeRequest(url, HttpMethod.Delete, options, body)
-    }
-
-    static put(url, body, options) {
-        return this.makeRequest(url, HttpMethod.Put, options, body)
-    }
-
-    static authorize(token, headerName = "Authorization") {
-        this._authorization = token
-        this._authorizationHeader = headerName
+    static authorize(value, headerName = "Authorization") {
+        this.addDefaultHeader(headerName, value)
     }
 }
