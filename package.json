@@ -1,23 +1,24 @@
 {
-  "name": "@huth/utils",
-  "version": "1.0.1",
-  "description": "Utility wrappers for local storage, fetch and geo position.",
-  "main": "index.js",
-  "sideEffects": false,
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://tommhuth@github.com/tommhuth/utils.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tommhuth/utils/issues"
-  },
-  "homepage": "https://github.com/tommhuth/utils#readme",
-  "dependencies": {
-    "isomorphic-fetch": "^2.2.1"
-  }
+    "name": "@huth/utils",
+    "version": "2.0.0",
+    "description": "Utility wrappers for local storage, fetch and geo position.",
+    "main": "index.js",
+    "sideEffects": false,
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://tommhuth@github.com/tommhuth/utils.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tommhuth/utils/issues"
+    },
+    "homepage": "https://github.com/tommhuth/utils#readme",
+    "dependencies": {
+        "core-js": "^3.x",
+        "unfetch": "^4.1.0"
+    }
 }
