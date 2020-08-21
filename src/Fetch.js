@@ -1,5 +1,3 @@
-import fetch from "unfetch"
-
 export const HttpMethod = {
     GET: "get",
     POST: "post",
@@ -26,10 +24,6 @@ export class FetchError extends Error {
 }
 
 export class Fetch {
-    static defaultHeaders = {
-        "content-type": "application/json"
-    }
-
     static async request(url, {
         method = HttpMethod.GET,
         body,
@@ -108,4 +102,8 @@ export class Fetch {
     static authorize(value, headerName = "Authorization") {
         this.addDefaultHeader(headerName, value)
     }
+}
+
+Fetch.defaultHeaders = {
+    "content-type": "application/json"
 }

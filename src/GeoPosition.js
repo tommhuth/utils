@@ -1,18 +1,37 @@
 export default class GeoPosition {
-    static defaultOptions = {
-        enableHighAccuracy: false,
-        timeout: 1000 * 60 * 3,
-        maximumAge: 0
-    }
+    static get({
+        enableHighAccuracy = false,
+        timeout = 1000 * 60 * 3,
+        maximumAge = 0
 
-    static get(options) { 
+    }) {
         return new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, { ...this.defaultOptions, ...options })
+            navigator.geolocation.getCurrentPosition(
+                resolve,
+                reject,
+                {
+                    enableHighAccuracy,
+                    timeout,
+                    maximumAge
+                }
+            )
         })
     }
 
-    static watch(successFunc, errorFunc = () => { }, options = {}) { 
-        return navigator.geolocation.watchPosition(successFunc, errorFunc, { ...this.defaultOptions, ...options })
+    static watch(successFunc, errorFunc = () => { }, {
+        enableHighAccuracy = false,
+        timeout = 1000 * 60 * 3,
+        maximumAge = 0
+    }) {
+        return navigator.geolocation.watchPosition(
+            successFunc,
+            errorFunc,
+            {
+                enableHighAccuracy,
+                timeout,
+                maximumAge
+            }
+        )
     }
 
     static unwatch(id) {
