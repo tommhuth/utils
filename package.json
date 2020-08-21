@@ -1,6 +1,6 @@
 {
     "name": "@huth/utils",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "Utility wrappers for local storage, fetch and geo position.",
     "main": "index.js",
     "sideEffects": false,
