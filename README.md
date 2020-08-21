@@ -5,3 +5,4 @@
  2. `import { Fetch, LocalStorage, GeoPosition } from "@huth/utils"`
 
 v4 does away with fetch polyfill and drops static class properties ensuring it should work on most modern browser without transpilation.
+<
