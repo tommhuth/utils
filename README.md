@@ -4,4 +4,4 @@
  1. `yarn add @huth/utils`
  2. `import { Fetch, LocalStorage, GeoPosition } from "@huth/utils"`
 
-**Version 4** does away with fetch polyfill and drops static class properties ensuring it should work on most modern browser without transpilation.
+**Version 3** does away with fetch polyfill and drops static class properties ensuring it should work on most modern browser without transpilation.
